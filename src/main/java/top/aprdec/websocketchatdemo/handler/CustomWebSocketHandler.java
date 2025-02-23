@@ -1,6 +1,7 @@
 package top.aprdec.websocketchatdemo.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -53,6 +54,18 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage(message));
             }catch (IOException e){
                 log.error("广播消息失败:",e);
+            }
+        });
+    }
+
+    @Scheduled(fixedRate = 10000)
+    public void sendHeartbeat(){
+        String heartbeat = "heartbeat";
+        sessions.values().forEach(session->{
+            try{
+                session.sendMessage(new TextMessage(heartbeat));
+            }catch (IOException e) {
+                log.error("发送心跳消息失败", e);
             }
         });
     }
